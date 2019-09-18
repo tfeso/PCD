@@ -26,7 +26,7 @@ private JFrame frame;
 
 
 		JPanel painelDados = new JPanel();		
-		painelDados.setLayout(new GridLayout(5,2));
+		painelDados.setLayout(new GridLayout(4,2));
 
 		JLabel label = new JLabel("Title: ");
 		painelDados.add(label);
@@ -35,12 +35,12 @@ private JFrame frame;
 		
 		JLabel width = new JLabel("width");
 		painelDados.add(width);
-		JTextField labelWidth = new JTextField("200");
+		JTextField labelWidth = new JTextField("300");
 		painelDados.add(labelWidth);
 		
 		JLabel height = new JLabel("height");
 		painelDados.add(height);
-		JTextField labelHeight = new JTextField("150");
+		JTextField labelHeight = new JTextField("200");
 		painelDados.add(labelHeight);
 		
 		JButton btnUpdate = new JButton("update");
@@ -57,17 +57,18 @@ private JFrame frame;
 
 		frame.add(painelPrincipal);
 		frame.setSize(300, 200);
-		frame.pack();
 		
 		btnUpdate.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				frame.setTitle(labelTitle.getText());
 				frame.setSize(Integer.parseInt(labelWidth.getText()), Integer.parseInt(labelHeight.getText()));	
 				
-				if(check.isEnabled()) {
+				if(check.isSelected()) {
 					frame.setLocationRelativeTo(null);
+					System.out.println(check.isEnabled());
 				}
 			}
 		});
