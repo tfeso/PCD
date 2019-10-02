@@ -6,7 +6,7 @@ public class Race {
 	private ArrayList<Cavalo> listCavalos;
 	
 	public Race(Window GUI) {
-		this.GUI = GUI;
+		this.GUI = GUI; 
 		listCavalos = new ArrayList<Cavalo>();
 		listCavalos.add(new Cavalo(1001, this));
 		listCavalos.add(new Cavalo(1002, this));
