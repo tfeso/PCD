@@ -7,24 +7,14 @@ public class Cozinheiro extends Thread {
 	public Cozinheiro(int id, Mesa mesa) {
 		this.id = id;
 		this.mesa = mesa;
-	}
-
-	private synchronized void cozinharJavali() {
-
-		while(mesa.isFull()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				//e.printStackTrace();
-			}
-		}
-		mesa.put(new Javali());
-		notifyAll(); //notifayAll ou notifay?
-	}
+	}	
 
 	@Override
 	public void run() {
-		cozinharJavali();
+		System.out.println("Cozinheiro " + id + " arrancou!");
+		while(!interrupted()) {
+			mesa.put(new Javali(mesa.getNumJavalis() + 1, this));
+		}
 	}
 
 }

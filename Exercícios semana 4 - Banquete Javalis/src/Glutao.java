@@ -9,23 +9,13 @@ public class Glutao extends Thread {
 		this.mesa = mesa;
 	}
 	
-	private void comerJavali() {
-
-		while(mesa.isEmpty()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				//e.printStackTrace();
-			}
-		}
-		mesa.get();
-		notifyAll(); //notifayAll ou notifay?
-	}
-	
 	@Override
 	public void run() {
-
-		comerJavali();
+		System.out.println("Glutão " + id + " arrancou!");
+		while(!interrupted()) {
+			System.out.println("O glutão " + id + " vai tentar comer!");
+			mesa.get();
+		}
 	}
 	
 }
