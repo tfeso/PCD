@@ -18,7 +18,12 @@ public class Escavadora extends Thread {
 	public void run() {
 		System.out.println("Escavadora " + id + " iniciou a escavação..");
 		while(!isInterrupted()) {
-			balanca.putGold(randomGold());
+			try {
+				balanca.putGold(randomGold());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
 		}
 		System.out.println("Escavadora " + id + " terminou o run");
 	}

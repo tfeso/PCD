@@ -12,15 +12,12 @@ public class Balanca {
 		this.gui = gui;
 	}
 
-	public synchronized void putGold(double gold) {
+	public synchronized void putGold(double gold) throws InterruptedException {
 		System.out.println("Tentar colocar gold: " + gold);
-		try {
+		
 			while(currentWeight >= WEIGHT_LINGOTE) {
 				wait();
 			} 
-		} catch (InterruptedException e) {
-			return;
-		}
 		System.out.println("Colocado na balança: " + gold);
 		currentWeight += gold;
 		System.out.println("Peso atual na balança: " + currentWeight);
@@ -29,15 +26,13 @@ public class Balanca {
 		notifyAll();
 	}
 
-	public synchronized void getGold() {
+	public synchronized void getGold() throws InterruptedException {
 		System.out.println("Tentar retirar gold..");
-		try {
+
 			while(currentWeight < WEIGHT_LINGOTE) {
 				wait();
 			}
-		} catch (InterruptedException e) {
-			return;
-		}
+
 		System.out.println("Gold retirado!");
 		currentWeight -= WEIGHT_LINGOTE;
 		System.out.println("Peso atual na balança: " + currentWeight);
