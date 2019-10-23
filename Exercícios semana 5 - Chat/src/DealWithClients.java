@@ -21,6 +21,7 @@ public class DealWithClients extends Thread {
 	public void run() {
 
 		try {
+			server.addClient(s);
 			doConnections();
 			serve();
 		} catch (IOException e) {

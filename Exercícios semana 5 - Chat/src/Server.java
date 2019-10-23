@@ -7,11 +7,13 @@ public class Server {
 	
 	public static final int PORTO = 8080;
 	private ArrayList<DealWithClients> dealWithClientsList;
+	private ArrayList<Client> clientsList;
 
 	
 	public void startServing() throws IOException {
 		
 		dealWithClientsList = new ArrayList<DealWithClients>();
+		clientsList = new ArrayList<Client>();
 		ServerSocket ss = new ServerSocket(PORTO);
 		System.out.println("O servidor lançou a ServerSocket: " + ss);
 		
@@ -40,6 +42,11 @@ public class Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void addClient(Client client) {
+		
+		clientsList.add(client);
 	}
 
 }
