@@ -1,12 +1,22 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileFilter;
 
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,11 +38,17 @@ public class GUI {
 	private JPanel panelTextFields;
 	private JPanel panelButtons;
 	private JScrollPane viewer;
+	private JPanel centerPanel;
+	private JLabel labelImage;
+	private DefaultListModel<String> modelLeft;
+	private DefaultListModel<String> modelRight;
+	private File[] files;
 
 	public GUI() {
 		instanceComponents();
 		buildComponents();
 		actionButtons();
+		loadImages();
 	}
 
 	private void instanceComponents() {
@@ -42,8 +58,12 @@ public class GUI {
 		panelSouth = new JPanel();
 		panelTextFields = new JPanel();
 		panelButtons = new JPanel();
-		listLeft = new JList();
-		listRight = new JList();
+		centerPanel = new JPanel();
+		modelRight = new DefaultListModel<String>();
+		modelLeft = new DefaultListModel<String>();
+		listLeft = new JList(modelLeft);
+		listRight = new JList(modelRight);
+		labelImage = new JLabel();
 		btnImagesFolder = new JButton("Folder");
 		btnSubImage = new JButton("Image");
 		btnSearch = new JButton("Search");
@@ -51,22 +71,18 @@ public class GUI {
 		txtSubImage = new JTextField();
 		txtImagesFolder.setEnabled(false);
 		txtSubImage.setEnabled(true);
-		viewer = new JScrollPane();
+		viewer = new JScrollPane(centerPanel);
 	}
 
 	private void buildLeft() {
-		String[] listAux = new String[1];
-		listAux[0] = "                          ";
-		listLeft.setListData(listAux);
+		listLeft.setPreferredSize(new Dimension(100, 0));
 		panelLeft.setLayout(new GridLayout());
 		panelLeft.add(listLeft);
 		frameMain.add(panelLeft, BorderLayout.WEST);
 	}
 
 	private void buildRight() {
-		String[] listAux = new String[1];
-		listAux[0] = "                          ";
-		listRight.setListData(listAux);
+		listRight.setPreferredSize(new Dimension(100,0));
 		panelRight.setLayout(new GridLayout());
 		panelRight.add(listRight);
 		frameMain.add(panelRight, BorderLayout.EAST);
@@ -92,7 +108,8 @@ public class GUI {
 
 		panelSouth.add(panelTextFields);
 		panelSouth.add(panelButtons, BorderLayout.EAST);
-
+		
+		centerPanel.add(labelImage);
 
 		frameMain.add(panelSouth, BorderLayout.SOUTH);
 		frameMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -128,6 +145,72 @@ public class GUI {
 				
 			}
 		});
+		
+
+		    listRight.addKeyListener(new KeyAdapter() {
+		        public void keyPressed(KeyEvent e) {
+		            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) { // O down não funciona porque??
+		            	labelImage.setIcon(new ImageIcon(listRight.getSelectedValue().toString()));
+		            }
+		        }
+		    });
+
+		    listRight.addMouseListener(new MouseAdapter() {
+		        public void mouseClicked(MouseEvent e) {
+		            if (e.getClickCount() == 1) {
+		            	labelImage.setIcon(new ImageIcon(listRight.getSelectedValue().toString()));
+		            }
+		        }
+		    });
+
+		
+	}
+	
+	public void addWorkerToList(int workerType) {
+		switch(workerType) {
+			case 0:
+				if(!existsWorkerInList("simples"))
+					modelLeft.addElement("Procura simples");
+				break;
+			case 90:
+				if(!existsWorkerInList("90"))
+					modelLeft.addElement("Procura 90º");
+				break;
+			case 180:
+				if(!existsWorkerInList("180"))
+					modelLeft.addElement("Procura 180º");
+				break;
+			case 270:
+				if(!existsWorkerInList("270"))
+					modelLeft.addElement("Procura 270º");
+				break;
+			}
+	}
+	
+	private boolean existsWorkerInList(String rotation) {
+		for(int i = 0; i < modelLeft.getSize(); i++) {
+			if(modelLeft.get(i).contains(rotation))
+				return true;
+		}
+		return false;
+	}
+	
+	private void loadImages() {
+
+		String path = System.getProperty("user.dir"); // obtem o diretorio de execucao (raiz do projeto Eclipse)
+		files = new File(path).listFiles(new FileFilter() {
+		     public boolean accept(File f) {
+				  
+		          // se retornar verdadeiro, f ser� incluido
+		    	 if(f.getName().endsWith(".png")) {
+		    		 return true;
+		    	 }
+				return false;
+		     }
+		});
+			for(File f : files) {
+				modelRight.addElement(f.getName());
+			}
 	}
 
 	private void chooseFolder() {
@@ -140,6 +223,12 @@ public class GUI {
 			File selectedFile = jfc.getSelectedFile();
 			txtImagesFolder.setText(selectedFile.getAbsolutePath());
 		}
+	}
+	
+	public void uploadImages(BufferedImage bf) {
+		
+		
+		
 	}
 	
 	private void chooseSubImage() {
@@ -155,7 +244,6 @@ public class GUI {
 	}
 
 	public static void main(String[] args) {
-
 
 		GUI g = new GUI();
 	}
