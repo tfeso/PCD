@@ -1,28 +1,39 @@
 package general;
 
+import client.Task;
+import java.util.LinkedList;
+
 public class TasksList implements BloquingQueue {
 
-	public void offer() {
-		// TODO Auto-generated method stub
-		
+	private LinkedList<Task> tasksList;
+	private final static int LIMIT = 100;
+	
+	public TasksList() {
+		tasksList = new LinkedList<Task>();
+	}
+	
+	public synchronized void offer(Task task) throws InterruptedException {
+		while(size() == LIMIT) {
+			wait();
+		}
+		tasksList.add(task);
+		notifyAll();
 	}
 
-	public Object poll() {
-		// TODO Auto-generated method stub
-		return null;
+	public synchronized Task poll() throws InterruptedException {
+		while(size() == 0) {
+			wait();
+		}
+		notifyAll();
+		return tasksList.getFirst();
 	}
 
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return tasksList.size();
 	}
 
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		if(tasksList.size() > 0)
+			tasksList.clear();
 	}
-	
-	
-	
-
 }

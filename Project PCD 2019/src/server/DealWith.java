@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import general.Message;
+import messages.Message;
 
 public class DealWith extends Thread {
 
@@ -51,9 +51,9 @@ public class DealWith extends Thread {
 		while(true) {
 			try {
 				Message m = (Message) in.readObject();
-				if(m.getType().equals("WORKER")) {
+				if(m.getCode().equals("101")) {
 					isWorker = true;
-					System.out.println(m.getType() + ": " + m.getRotation());
+					System.out.println(m.getContent());
 					for(DealWith dw : server.getDealWithClients()) {
 						dw.out.writeObject(m);
 					}

@@ -6,7 +6,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import general.Message;
+import messages.Message;
+import messages.MessagesType;
 import server.Server;
 
 public class Worker extends Thread {
@@ -43,7 +44,7 @@ public class Worker extends Thread {
 	@Override
 	public void run() {
 		try {
-			out.writeObject(new Message("WORKER", rotation));
+			out.writeObject(MessagesType.newWorker(rotation));
 			//TasksList taskList = server.getTaskList();
 			while(!isInterrupted()) {
 

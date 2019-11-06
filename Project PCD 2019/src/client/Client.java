@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import general.Message;
+import messages.Message;
 
 public class Client {
 
@@ -52,8 +52,8 @@ public class Client {
 			Message m;
 			try {
 				m = (Message) in.readObject();
-				if(m.getType().equals("WORKER")) {
-					gui.addWorkerToList(m.getRotation());
+				if(m.getCode().equals("101")) {
+					gui.addWorkerToList(Integer.parseInt(m.getContent()));
 				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
