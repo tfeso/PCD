@@ -1,9 +1,13 @@
+package worker;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import general.Message;
+import server.Server;
 
 public class Worker extends Thread {
 
@@ -14,7 +18,7 @@ public class Worker extends Thread {
 	private int rotation;
 	private Socket s;
 	private Server server;
-	
+
 	public Worker(String address, int PORTO, int rotation) {
 
 		try {
@@ -26,7 +30,7 @@ public class Worker extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void connectServer() throws IOException{
 
 		System.out.println("Address: " + address);
@@ -35,15 +39,15 @@ public class Worker extends Thread {
 		in = new ObjectInputStream(s.getInputStream());
 
 	}
-	
+
 	@Override
 	public void run() {
 		try {
 			out.writeObject(new Message("WORKER", rotation));
 			//TasksList taskList = server.getTaskList();
 			while(!isInterrupted()) {
-			
-			
+
+
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

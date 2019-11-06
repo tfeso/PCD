@@ -1,29 +1,31 @@
+package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import general.TasksList;
+import worker.Worker;
+
 public class Server {
-	
+
 	public static int PORTO;
 	private ArrayList<DealWith> dealWithList;
-	private ArrayList<Client> clientsList;
-	private ArrayList<Worker> workersList;
+	private ArrayList<DealWith> workersList;
 	private TasksList taskList;
 
 	public Server(int Porto) {
 		this.PORTO = Porto;
 	}
-	
+
 	public void startServing() throws IOException {
-		
+
 		dealWithList = new ArrayList<DealWith>();
-		clientsList = new ArrayList<Client>();
-		workersList = new ArrayList<Worker>();
 		taskList = new TasksList();
+		workersList = new ArrayList<DealWith>();
 		ServerSocket ss = new ServerSocket(PORTO);
 		System.out.println("O servidor lançou a ServerSocket: " + ss);
-		
+
 		try {
 			while(true) {
 				Socket s = ss.accept();
@@ -35,13 +37,9 @@ public class Server {
 			System.out.println("A fechar a ServerSocket...");
 			ss.close();
 		}
-		
+
 	}
-	
-	public ArrayList<DealWith> getDealWithClientsList(){
-		return dealWithList;
-	}
-	
+
 	public static void main(String[] args) {
 
 		try {
@@ -51,14 +49,42 @@ public class Server {
 			System.out.println("Erro ao iniciar o servidor, argumento passado inválido!");
 		}
 	}
-	
+
 	public TasksList getTaskList() {
 		return taskList;
 	}
 
-	public void addClient(Client client) {
+	public ArrayList<DealWith> getDealWithWorkers(){
 		
-		clientsList.add(client);
+		ArrayList<DealWith> dwc = new ArrayList<DealWith>();
+		for(DealWith d : dealWithList) {
+			if(d.isWorker())
+				dwc.add(d);
+		}
+		return dwc;
 	}
 
+	public ArrayList<DealWith> getDealWithClients(){
+		
+		ArrayList<DealWith> dwc = new ArrayList<DealWith>();
+		for(DealWith d : dealWithList) {
+			if(!d.isWorker())
+				dwc.add(d);
+		}
+		return dwc;
+	}
+	
+	public void addWorker(Worker worker) {
+		//workersList.add(worker);
+	}
+	
+	public void removeDealWith(DealWith dw) {
+		
+		dealWithList.remove(dw);
+		
+		for(DealWith d : getDealWithWorkers()) {
+			
+			
+		}
+	}
 }

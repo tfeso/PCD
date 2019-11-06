@@ -1,8 +1,11 @@
+package client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+
+import general.Message;
 
 public class Client {
 
@@ -12,11 +15,11 @@ public class Client {
 	private InetAddress address;
 	private GUI gui;
 	private int PORTO;
-	
+
 	public Client(String address, int PORTO) {
 		try {
-		this.PORTO = PORTO;
-		this.address = InetAddress.getByName(address);
+			this.PORTO = PORTO;
+			this.address = InetAddress.getByName(address);
 			connectServer();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -43,7 +46,7 @@ public class Client {
 		in = new ObjectInputStream(s.getInputStream());
 
 	}
-	
+
 	private void serve() throws IOException {
 		while(true) {
 			Message m;
@@ -57,7 +60,7 @@ public class Client {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		new Client(args[0],Integer.parseInt(args[1]));
 	}
