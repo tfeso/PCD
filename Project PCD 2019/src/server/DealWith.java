@@ -4,8 +4,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.swing.JOptionPane;
 
 import messages.Message;
+import messages.MessagesType;
 
 public class DealWith extends Thread {
 
@@ -13,54 +17,54 @@ public class DealWith extends Thread {
 	private ObjectOutputStream out;
 	private Socket s;
 	private Server server;
-	private boolean isWorker;
-
+	private int rotation = -1;
+	
 	public DealWith(Server server, Socket s) {
-
 		this.server = server;
 		this.s = s;
-		isWorker = false;
 	}
 
 	@Override
 	public void run() {
 
 		try {
-			//server.addClient(s);
 			doConnections();
 			serve();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}finally {
-			System.out.println("A fechar...");
+			System.out.println("It's Closed!");
 			try {
-				
-				if(isWorker) {
-					server.removeDealWith(this);
-				}
-				
 				s.close();
-				
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Error in Socket Close!");
 			}
 		}
 	}
 
 	private void serve() throws IOException {
-		while(true) {
-			try {
-				Message m = (Message) in.readObject();
-				if(m.getCode().equals("101")) {
-					isWorker = true;
-					System.out.println(m.getContent());
-					for(DealWith dw : server.getDealWithClients()) {
-						dw.out.writeObject(m);
+		try {
+			while(true) {
+				try {
+					Message m = (Message) in.readObject();
+					System.out.println("Code: " + m.getCode());
+					switch(m.getCode()) {
+						case "001": // NEW CLIENT
+							server.addDwClient(this);
+							break;
+						case "101": // NEW WORKER
+							rotation = Integer.parseInt(m.getContent());
+							server.addDwWorker(this, rotation);
+							updateWorkersInGUI();
+							break;
 					}
+				} catch (ClassNotFoundException e) {
+					System.out.println("Class message not exists");
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
+		} catch (Exception e) {
+			server.removeDW(this, rotation);
+			updateWorkersInGUI();
 		}
 	}
 
@@ -69,7 +73,16 @@ public class DealWith extends Thread {
 		in = new ObjectInputStream(s.getInputStream());
 	}
 	
-	public boolean isWorker() {
-		return isWorker;
+	private void updateWorkersInGUI() {
+		for(DealWith dw : server.getDwClients()) {
+			try {
+				dw.out.writeObject(MessagesType.updateWorkers(server.getWorkersByRotation()));
+			} catch (IOException e) {
+				System.out.println("Error to update workers");
+			}
+		}
 	}
+	
+
+	
 }

@@ -4,8 +4,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
 
 import messages.Message;
+import messages.MessagesType;
 
 public class Client {
 
@@ -29,13 +31,11 @@ public class Client {
 	}
 
 	public void runClient() {
-
 		try {
 			serve();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void connectServer() throws IOException{
@@ -48,13 +48,19 @@ public class Client {
 	}
 
 	private void serve() throws IOException {
+		out.writeObject(MessagesType.newClient());
 		while(true) {
 			Message m;
 			try {
 				m = (Message) in.readObject();
-				if(m.getCode().equals("101")) {
-					gui.addWorkerToList(Integer.parseInt(m.getContent()));
+				
+				switch(m.getCode()) {
+					case "103":
+						//gui.addWorkerToList(Integer.parseInt(m.getContent()));
+						gui.updateWorkersInList(m.getWorkersToUpdate());
+						break;
 				}
+			
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -72,5 +78,15 @@ public class Client {
 	public ObjectOutputStream getObjectOutputStream() {
 		return out;
 	}
+	
+
+	private String printWorkersByRotationString(HashMap<Integer, Integer> workersByRotation) {
+		String a = "";
+		for (Integer key : workersByRotation.keySet()) {
+			a += "Rotation: " + key + " Number of workers: " + workersByRotation.get(key) + System.lineSeparator();
+		}
+return a;	}
+	
+	
 
 }

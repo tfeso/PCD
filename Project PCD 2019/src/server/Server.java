@@ -3,50 +3,49 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.Iterator;
 import general.TasksList;
-import worker.Worker;
 
 public class Server {
 
 	public static int PORTO;
-	private ArrayList<DealWith> dealWithList;
-	private ArrayList<DealWith> workersList;
+	private ArrayList<DealWith> dwClientsList;
+	private ArrayList<DealWith> dwWorkersList;
+	private HashMap<Integer, Integer> workersByRotation;
 	private TasksList taskList;
 
 	public Server(int Porto) {
 		this.PORTO = Porto;
+		workersByRotation = new HashMap<Integer, Integer>();
 	}
 
 	public void startServing() throws IOException {
 
-		dealWithList = new ArrayList<DealWith>();
+		dwClientsList = new ArrayList<DealWith>();
+		dwWorkersList = new ArrayList<DealWith>();
 		taskList = new TasksList();
-		workersList = new ArrayList<DealWith>();
 		ServerSocket ss = new ServerSocket(PORTO);
-		System.out.println("O servidor lançou a ServerSocket: " + ss);
+		System.out.println("The server launch the ServerSocket: " + ss);
 
 		try {
 			while(true) {
 				Socket s = ss.accept();
 				DealWith dw = new DealWith(this,s);
 				dw.start();
-				dealWithList.add(dw);
 			}
 		}finally {
-			System.out.println("A fechar a ServerSocket...");
+			System.out.println("Closing ServerSocket...");
 			ss.close();
 		}
-
 	}
 
 	public static void main(String[] args) {
-
 		try {
 			new Server(Integer.parseInt(args[0])).startServing();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Erro ao iniciar o servidor, argumento passado inválido!");
+			System.out.println("Error on inicializate the server, argument invalid!");
 		}
 	}
 
@@ -54,37 +53,71 @@ public class Server {
 		return taskList;
 	}
 
-	public ArrayList<DealWith> getDealWithWorkers(){
-		
-		ArrayList<DealWith> dwc = new ArrayList<DealWith>();
-		for(DealWith d : dealWithList) {
-			if(d.isWorker())
-				dwc.add(d);
-		}
-		return dwc;
+	public ArrayList<DealWith> getDwWorkers(){
+		return dwWorkersList;
 	}
 
-	public ArrayList<DealWith> getDealWithClients(){
-		
-		ArrayList<DealWith> dwc = new ArrayList<DealWith>();
-		for(DealWith d : dealWithList) {
-			if(!d.isWorker())
-				dwc.add(d);
+	public ArrayList<DealWith> getDwClients(){
+		return dwClientsList;
+	}
+
+	public void removeDW(DealWith dealWith, int rotation) {
+		Iterator itClients = dwClientsList.iterator();
+		while (itClients.hasNext()) {
+			if (((DealWith)itClients.next()).equals(dealWith)) {
+				itClients.remove();
+				System.out.println("Number of clients: " + dwClientsList.size());
+				return;
+			}
 		}
-		return dwc;
+
+		Iterator itWorkers = dwWorkersList.iterator();
+		while (itWorkers.hasNext()) {
+			if (((DealWith)itWorkers.next()).equals(dealWith)) {
+				itWorkers.remove();
+				if(rotation != -1) { 
+					if(workersByRotation.containsKey(rotation)) {
+						int numberOfActiveWorkers = workersByRotation.get(rotation);
+						if(numberOfActiveWorkers > 0)
+							numberOfActiveWorkers--;
+						workersByRotation.put(rotation,numberOfActiveWorkers);
+					} else {
+						workersByRotation.put(rotation, 1);
+					}
+					printWorkersByRotation();
+				}
+				System.out.println("Number of workers: " + dwWorkersList.size());
+				return;
+			}
+		}
+	}
+
+	public void addDwClient(DealWith dw) {
+		dwClientsList.add(dw);
+		System.out.println("Number Of Clients: " + dwClientsList.size());
+	}
+
+	public void addDwWorker(DealWith dw, int rotation) {
+		dwWorkersList.add(dw);
+		if(workersByRotation.containsKey(rotation)) {
+			int numberOfActiveWorkers = workersByRotation.get(rotation) + 1;
+			workersByRotation.put(rotation,numberOfActiveWorkers);
+		} else {
+			workersByRotation.put(rotation, 1);
+		}
+		System.out.println("Number Of Workers: " + dwWorkersList.size());
+		printWorkersByRotation();
 	}
 	
-	public void addWorker(Worker worker) {
-		//workersList.add(worker);
+	private void printWorkersByRotation() {
+		System.out.println("----------------------------------");
+		for (Integer key : workersByRotation.keySet()) {
+			System.out.println("Rotation: " + key + " Number of workers: " + workersByRotation.get(key));
+		}
+		System.out.println("----------------------------------");
 	}
 	
-	public void removeDealWith(DealWith dw) {
-		
-		dealWithList.remove(dw);
-		
-		for(DealWith d : getDealWithWorkers()) {
-			
-			
-		}
+	public HashMap<Integer, Integer> getWorkersByRotation() {
+		return workersByRotation;
 	}
 }

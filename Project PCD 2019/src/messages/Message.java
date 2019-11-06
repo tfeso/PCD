@@ -1,15 +1,16 @@
 package messages;
 import java.io.Serializable;
-import java.net.InetAddress;
 
 public class Message implements Serializable {
 
 	private String code;
 	private String content;
+	private String workersToUpdateStr;
 
-	public Message(String code, String content) {
+	public Message(String code, String content, String workersToUpdateStr) {
 		this.code = code;
 		this.content = content;
+		this.workersToUpdateStr = workersToUpdateStr;
 	}
 
 	public String getCode() {
@@ -19,4 +20,10 @@ public class Message implements Serializable {
 	public String getContent() {
 		return content;
 	}
+	
+	
+	public String getWorkersToUpdate() {
+		return workersToUpdateStr;
+	}
+	
 }

@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -191,34 +192,14 @@ public class GUI {
 
 
 	}
-
-	public void addWorkerToList(int workerType) {
-		switch(workerType) {
-		case 0:
-			if(!existsWorkerInList("simples"))
-				modelLeft.addElement("Procura 0");
-			break;
-		case 90:
-			if(!existsWorkerInList("90"))
-				modelLeft.addElement("Procura 90");
-			break;
-		case 180:
-			if(!existsWorkerInList("180"))
-				modelLeft.addElement("Procura 180");
-			break;
-		case 270:
-			if(!existsWorkerInList("270"))
-				modelLeft.addElement("Procura 270");
-			break;
+	
+	public void updateWorkersInList(String workersToUpdate) {
+		modelLeft.clear();
+		String[] workersActive = workersToUpdate.split(";");
+		for(String worker : workersActive) {
+			if(!worker.isEmpty())
+				modelLeft.addElement("Procura " + worker.toString() + "º");
 		}
-	}
-
-	private boolean existsWorkerInList(String rotation) {
-		for(int i = 0; i < modelLeft.getSize(); i++) {
-			if(modelLeft.get(i).contains(rotation))
-				return true;
-		}
-		return false;
 	}
 
 	private void loadImages() throws IOException {
