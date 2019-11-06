@@ -6,13 +6,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
-class EditImage {
+public class EditImage {
 
 
-	public static void drawRectangule(BufferedImage image, int x, int y, int width, int height) {
+	public static void drawRectangule(BufferedImage image, int x, int y, int width, int height, Color color) {
 		// Desenhar rectângulo sobre imagem
 		Graphics2D g2d = image.createGraphics();
-		g2d.setColor(Color.RED);
+		g2d.setColor(color);
 		g2d.drawRect(x, y, width, height);
 		g2d.dispose(); 
 	}
@@ -25,12 +25,16 @@ class EditImage {
 		for(int i = 0; i < image.getWidth() - subImageAux.getWidth(); i++) {
 			for(int j = 0; j < image.getHeight() - subImageAux.getHeight(); j++) {
 
-					if(bufferedImagesEqual(image.getSubimage(i, j, subImageAux.getWidth(), subImageAux.getHeight()), subImageAux)) {
-						pointsList.add(new Point(i,j));
+				if(bufferedImagesEqual(image.getSubimage(i, j, subImageAux.getWidth(), subImageAux.getHeight()), subImageAux)) {
+					pointsList.add(new Point(i,j));
 				}
 			}
 		}
-		return pointsList;
+		if(pointsList.size() == 0) {
+			return null;
+		}else {
+			return pointsList;
+		}
 	}
 
 	private static boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {

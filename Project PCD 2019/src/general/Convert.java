@@ -42,4 +42,12 @@ public class Convert {
 		}
 		return null;		
 	}
+	
+	public static void bufferedImageToFIle(BufferedImage bufferedImage, String extension, String path) {
+		try {
+			ImageIO.write(bufferedImage, extension, new File(path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

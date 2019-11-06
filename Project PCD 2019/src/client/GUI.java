@@ -1,8 +1,12 @@
 package client;
 import general.Convert;
+import general.EditImage;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -49,8 +53,8 @@ public class GUI {
 	private DefaultListModel<String> modelRight;
 	private File[] files;
 	private Order order;
-	private ArrayList<BufferedImage> imagesList;
-	private BufferedImage subImage;
+	private ArrayList<File> imagesList;
+	private File subImage;
 
 	public GUI() {
 		instanceComponents();
@@ -79,7 +83,7 @@ public class GUI {
 		txtImagesFolder.setEnabled(false);
 		txtSubImage.setEnabled(false);
 		viewer = new JScrollPane(centerPanel);
-		imagesList = new ArrayList<BufferedImage>();
+		imagesList = new ArrayList<File>();
 	}
 
 	private void buildLeft() {
@@ -122,7 +126,7 @@ public class GUI {
 		frameMain.add(panelSouth, BorderLayout.SOUTH);
 		frameMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameMain.setResizable(false);
-		frameMain.setSize(700, 500);
+		frameMain.setSize(1000, 700);
 		frameMain.setLocationRelativeTo(null);
 		frameMain.setVisible(true);
 	}
@@ -134,7 +138,6 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				chooseFolder();
-				loadImages();
 			}
 		});
 
@@ -142,7 +145,11 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				chooseSubImage();
+				try {
+					chooseSubImage();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -158,7 +165,9 @@ public class GUI {
 					JOptionPane.showMessageDialog(frameMain, "Workers not selected or folder without images!");
 				}else {
 
-					new Order(getSelectedRotations(), imagesList, subImage);
+					order = new Order(getSelectedRotations(), imagesList, subImage);
+					new Aux(GUI.this, order);
+					drawAllImagesInOrder();
 				}
 			}
 		});
@@ -167,7 +176,7 @@ public class GUI {
 		listRight.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) { // O down não funciona porque??
-					labelImage.setIcon(new ImageIcon(listRight.getSelectedValue().toString()));
+					labelImage.setIcon(new ImageIcon("/Users/tsimao/git/PCD/Project PCD 2019/ImagesResult/" + listRight.getSelectedValue().toString()));
 				}
 			}
 		});
@@ -175,7 +184,7 @@ public class GUI {
 		listRight.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 1) {
-					labelImage.setIcon(new ImageIcon(listRight.getSelectedValue().toString()));
+					labelImage.setIcon(new ImageIcon("/Users/tsimao/git/PCD/Project PCD 2019/ImagesResult/" + listRight.getSelectedValue().toString()));
 				}
 			}
 		});
@@ -212,8 +221,8 @@ public class GUI {
 		return false;
 	}
 
-	private void loadImages() {
-		
+	private void loadImages() throws IOException {
+
 		files = new File(txtImagesFolder.getText()).listFiles(new FileFilter() {
 			public boolean accept(File f) {
 
@@ -225,12 +234,7 @@ public class GUI {
 			}
 		});
 		for(File f : files) {
-			modelRight.addElement(f.getName());
-			try {
-				imagesList.add(Convert.fileToBufferedImage(f));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			imagesList.add(f);
 		}
 	}
 
@@ -243,6 +247,11 @@ public class GUI {
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = jfc.getSelectedFile();
 			txtImagesFolder.setText(selectedFile.getAbsolutePath());
+			try {
+				loadImages();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -260,13 +269,7 @@ public class GUI {
 		return listLeft.getSelectedValuesList().size() > 0;
 	}
 
-	public void uploadImages(BufferedImage bf) {
-
-
-
-	}
-
-	private void chooseSubImage() {
+	private void chooseSubImage() throws IOException {
 
 		JFileChooser jfc = new JFileChooser(".");
 
@@ -274,19 +277,32 @@ public class GUI {
 		int returnValue = jfc.showOpenDialog(null);
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = jfc.getSelectedFile();
+			subImage = selectedFile;
+			txtSubImage.setText(selectedFile.getAbsolutePath());
+		}
+	}
+
+	private void drawAllImagesInOrder() {
+
+		for(String key : order.getResultMap().keySet()) {
 			try {
-				subImage = Convert.fileToBufferedImage(selectedFile);
-				txtSubImage.setText(selectedFile.getAbsolutePath());
+				BufferedImage bf = Convert.fileToBufferedImage(new File(key));
+				for(Point p : order.getResultMap().get(key)) {
+					EditImage.drawRectangule(bf, (int)p.getX(), (int)p.getY(), Convert.fileToBufferedImage(subImage).getWidth(), Convert.fileToBufferedImage(subImage).getHeight(), Color.RED);
+				}
+				Convert.bufferedImageToFIle(bf, "png", "/Users/tsimao/git/PCD/Project PCD 2019/ImagesResult/" + new File(key).getName());
+				modelRight.addElement(new File(key).getName());
+				System.out.println(new File(key).getName() + " Completed!");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Search completed!");
 	}
 
 	public static void main(String[] args) {
 
 		GUI g = new GUI();
 	}
-
 
 }
