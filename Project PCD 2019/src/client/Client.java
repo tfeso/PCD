@@ -26,7 +26,7 @@ public class Client {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		gui = new GUI();
+		gui = new GUI(this);
 		runClient();
 	}
 
@@ -80,12 +80,7 @@ public class Client {
 	}
 	
 
-	private String printWorkersByRotationString(HashMap<Integer, Integer> workersByRotation) {
-		String a = "";
-		for (Integer key : workersByRotation.keySet()) {
-			a += "Rotation: " + key + " Number of workers: " + workersByRotation.get(key) + System.lineSeparator();
-		}
-return a;	}
+	
 	
 	
 

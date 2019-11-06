@@ -110,14 +110,17 @@ public class Server {
 	}
 	
 	private void printWorkersByRotation() {
-		System.out.println("----------------------------------");
+		System.out.println("Workers by rotation:");
 		for (Integer key : workersByRotation.keySet()) {
 			System.out.println("Rotation: " + key + " Number of workers: " + workersByRotation.get(key));
 		}
-		System.out.println("----------------------------------");
 	}
 	
 	public HashMap<Integer, Integer> getWorkersByRotation() {
 		return workersByRotation;
+	}
+
+	private TasksList getTasksList() {
+		return taskList;
 	}
 }

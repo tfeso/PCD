@@ -1,10 +1,10 @@
 package client;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Task {
+public class Task implements Serializable {
 
 	private File image;
 	private File subImage;

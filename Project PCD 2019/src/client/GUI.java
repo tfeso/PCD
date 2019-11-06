@@ -1,6 +1,7 @@
 package client;
 import general.Convert;
 import general.EditImage;
+import messages.MessagesType;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -56,8 +57,10 @@ public class GUI {
 	private Order order;
 	private ArrayList<File> imagesList;
 	private File subImage;
+	private Client client;
 
-	public GUI() {
+	public GUI(Client client) {
+		this.client = client;
 		instanceComponents();
 		buildComponents();
 		actionButtons();
@@ -135,7 +138,6 @@ public class GUI {
 	private void actionButtons() {
 
 		btnImagesFolder.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				chooseFolder();
@@ -143,7 +145,6 @@ public class GUI {
 		});
 
 		btnSubImage.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -155,8 +156,6 @@ public class GUI {
 		});
 
 		btnSearch.addActionListener(new ActionListener() {
-
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
@@ -167,8 +166,13 @@ public class GUI {
 				}else {
 
 					order = new Order(getSelectedRotations(), imagesList, subImage);
-					new Aux(GUI.this, order);
-					drawAllImagesInOrder();
+					try {
+						client.getObjectOutputStream().writeObject(MessagesType.newTask(order.getTasksList()));
+					} catch (IOException e1) {
+						System.out.println("Error to send task list to server..");
+					}
+					// new Aux(GUI.this, order);
+					// drawAllImagesInOrder();
 				}
 			}
 		});
@@ -189,8 +193,6 @@ public class GUI {
 				}
 			}
 		});
-
-
 	}
 	
 	public void updateWorkersInList(String workersToUpdate) {
@@ -198,16 +200,13 @@ public class GUI {
 		String[] workersActive = workersToUpdate.split(";");
 		for(String worker : workersActive) {
 			if(!worker.isEmpty())
-				modelLeft.addElement("Procura " + worker.toString() + "º");
+				modelLeft.addElement("Procura " + worker.toString());
 		}
 	}
 
 	private void loadImages() throws IOException {
-
 		files = new File(txtImagesFolder.getText()).listFiles(new FileFilter() {
 			public boolean accept(File f) {
-
-				// se retornar verdadeiro, f ser� incluido
 				if(f.getName().endsWith(".png")) {
 					return true;
 				}
@@ -280,10 +279,5 @@ public class GUI {
 		}
 		System.out.println("Search completed!");
 	}
-
-	public static void main(String[] args) {
-
-		GUI g = new GUI();
-	}
-
+	
 }

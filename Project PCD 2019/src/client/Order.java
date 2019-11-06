@@ -1,7 +1,5 @@
 package client;
-
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +12,7 @@ public class Order {
 	private File subImage;
 	private HashMap<String, ArrayList<Point>> resultMap;
 
-	public Order(ArrayList rotationList, ArrayList<File> images, File subImage) {
+	public Order(ArrayList<Integer> rotationList, ArrayList<File> images, File subImage) {
 		this.rotationList = rotationList;
 		this.images = images;
 		this.subImage = subImage;

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 public class TasksList implements BloquingQueue {
 
 	private LinkedList<Task> tasksList;
-	private final static int LIMIT = 100;
+	private final static int LIMIT = 2;
 	
 	public TasksList() {
 		tasksList = new LinkedList<Task>();
@@ -25,7 +25,7 @@ public class TasksList implements BloquingQueue {
 			wait();
 		}
 		notifyAll();
-		return tasksList.getFirst();
+		return tasksList.removeFirst();
 	}
 
 	public int size() {

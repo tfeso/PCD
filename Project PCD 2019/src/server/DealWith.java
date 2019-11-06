@@ -3,11 +3,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.swing.JOptionPane;
-
+import client.Task;
 import messages.Message;
 import messages.MessagesType;
 
@@ -57,12 +53,22 @@ public class DealWith extends Thread {
 							server.addDwWorker(this, rotation);
 							updateWorkersInGUI();
 							break;
+						case "201": // PUT TASKS IN BLOQUINGQUEUE
+							for(Task t : m.getTasksList()) {
+								server.getTaskList().offer(t);
+								System.out.println("Offer: " + t.getImage() + " Rotation: " + t.getRotation());
+							}
+							break;
+						case "204": // GET TASK IN BLOQUINGQUEUE
+							out.writeObject(MessagesType.taskDelivery(server.getTaskList().poll()));
+							break;
 					}
 				} catch (ClassNotFoundException e) {
 					System.out.println("Class message not exists");
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			server.removeDW(this, rotation);
 			updateWorkersInGUI();
 		}
