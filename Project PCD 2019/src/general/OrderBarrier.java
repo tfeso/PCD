@@ -1,6 +1,8 @@
 package general;
 
-public class OrderBarrier implements Barrier {
+import java.io.Serializable;
+
+public class OrderBarrier implements Barrier, Serializable {
 
 	private int numberOfTasks;
 	private int tasksCompleted;

@@ -5,26 +5,31 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
+
+import client.Order;
 import general.TasksList;
 
 public class Server {
 
 	public static int PORTO;
-	private ArrayList<DealWith> dwClientsList;
-	private ArrayList<DealWith> dwWorkersList;
+	private ArrayList<DealWithClient> dwClientsList;
+	private ArrayList<DealWithWorker> dwWorkersList;
 	private HashMap<Integer, Integer> workersByRotation;
-	private TasksList taskList;
+	private TasksList sharedResourceTasks;
+	private ArrayList<Order> ordersList;
 
 	public Server(int Porto) {
 		this.PORTO = Porto;
-		workersByRotation = new HashMap<Integer, Integer>();
 	}
 
 	public void startServing() throws IOException {
 
-		dwClientsList = new ArrayList<DealWith>();
-		dwWorkersList = new ArrayList<DealWith>();
-		taskList = new TasksList();
+		dwClientsList = new ArrayList<DealWithClient>();
+		dwWorkersList = new ArrayList<DealWithWorker>();
+		sharedResourceTasks = new TasksList();
+		ordersList = new ArrayList<Order>();
+		workersByRotation = new HashMap<Integer, Integer>();
 		ServerSocket ss = new ServerSocket(PORTO);
 		System.out.println("The server launch the ServerSocket: " + ss);
 
@@ -50,15 +55,19 @@ public class Server {
 	}
 
 	public TasksList getTaskList() {
-		return taskList;
+		return sharedResourceTasks;
 	}
 
-	public ArrayList<DealWith> getDwWorkers(){
+	public ArrayList<DealWithWorker> getDwWorkers(){
 		return dwWorkersList;
 	}
 
-	public ArrayList<DealWith> getDwClients(){
+	public ArrayList<DealWithClient> getDwClients(){
 		return dwClientsList;
+	}
+	
+	public ArrayList<Order> getOrdersList() {
+		return ordersList;
 	}
 
 	public void removeDW(DealWith dealWith, int rotation) {
@@ -92,12 +101,12 @@ public class Server {
 		}
 	}
 
-	public void addDwClient(DealWith dw) {
+	public void addDwClient(DealWithClient dw) {
 		dwClientsList.add(dw);
 		System.out.println("Number Of Clients: " + dwClientsList.size());
 	}
 
-	public void addDwWorker(DealWith dw, int rotation) {
+	public void addDwWorker(DealWithWorker dw, int rotation) {
 		dwWorkersList.add(dw);
 		if(workersByRotation.containsKey(rotation)) {
 			int numberOfActiveWorkers = workersByRotation.get(rotation) + 1;
@@ -119,8 +128,19 @@ public class Server {
 	public HashMap<Integer, Integer> getWorkersByRotation() {
 		return workersByRotation;
 	}
+	
+	public Order getOrderById(UUID id) {
+		
+		for(Order o : ordersList) {
+			if(o.getId().equals(id)) {
+				System.out.println("Tasks completed: " + o.getBarrier().size());
+				return o;
+			}
+		}
+		return null;
+	}
 
 	private TasksList getTasksList() {
-		return taskList;
+		return sharedResourceTasks;
 	}
 }

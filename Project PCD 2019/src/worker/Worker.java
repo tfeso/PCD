@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import client.Task;
 import general.Convert;
 import general.EditImage;
 import messages.Message;
@@ -53,19 +54,16 @@ public class Worker extends Thread {
 					Message m = (Message) in.readObject();
 					switch(m.getCode()) {
 						case "205":
-							
+							Task t = m.getTaskDelivery();
 							ArrayList<Point> listPoints = EditImage.findSubImageinImage(m.getTaskDelivery().getRotation(), 
 													      								Convert.fileToBufferedImage(m.getTaskDelivery().getImage()), 
 													      								Convert.fileToBufferedImage(m.getTaskDelivery().getSubImage()));
-							String a = "";
 							if(listPoints != null) {
 								for(Point p : listPoints) {
-									a += "X: " + p.getX() + " Y: " + p.getY() + System.lineSeparator(); 
+									m.getTaskDelivery().addPoints(p);
 								}
-							}
-							System.out.println("Points" + System.lineSeparator() + a);
-							
-							//JOptionPane.showMessageDialog(null, a);
+							}							
+							out.writeObject(MessagesType.taskFromWorker(t));
 							break;
 					}
 				} catch (ClassNotFoundException e) {

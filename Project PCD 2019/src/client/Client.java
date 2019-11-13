@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
 
+import general.Barrier;
+import general.OrderBarrier;
 import messages.Message;
 import messages.MessagesType;
 
@@ -17,6 +19,7 @@ public class Client {
 	private InetAddress address;
 	private GUI gui;
 	private int PORTO;
+	private OrderBarrier barrier;
 
 	public Client(String address, int PORTO) {
 		try {
@@ -59,6 +62,7 @@ public class Client {
 						//gui.addWorkerToList(Integer.parseInt(m.getContent()));
 						gui.updateWorkersInList(m.getWorkersToUpdate());
 						break;
+					
 				}
 			
 			} catch (ClassNotFoundException e) {

@@ -1,39 +1,41 @@
 package general;
 
-import client.Task;
 import java.util.LinkedList;
+import java.util.Queue;
 
-public class TasksList implements BloquingQueue {
+public class TasksList<T> {
 
-	private LinkedList<Task> tasksList;
+	private Queue<T> tasksList;
 	private final static int LIMIT = 2;
 	
 	public TasksList() {
-		tasksList = new LinkedList<Task>();
+		tasksList = new LinkedList<>();
 	}
 	
-	public synchronized void offer(Task task) throws InterruptedException {
-		while(size() == LIMIT) {
+	public synchronized void offer(T task) throws InterruptedException {
+		while(size() >= LIMIT) {
 			wait();
 		}
 		tasksList.add(task);
 		notifyAll();
 	}
 
-	public synchronized Task poll() throws InterruptedException {
+	public synchronized T poll() throws InterruptedException {
 		while(size() == 0) {
 			wait();
 		}
+		T temp = tasksList.remove();
 		notifyAll();
-		return tasksList.removeFirst();
+		return temp;
 	}
 
 	public int size() {
 		return tasksList.size();
 	}
 
-	public void clear() {
+	public synchronized void clear() {
 		if(tasksList.size() > 0)
 			tasksList.clear();
 	}
+
 }

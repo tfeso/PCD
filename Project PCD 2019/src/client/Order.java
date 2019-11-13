@@ -1,16 +1,23 @@
 package client;
 import java.awt.Point;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
-public class Order {
+import general.Barrier;
+import general.OrderBarrier;
+
+public class Order implements Serializable {
 
 	private ArrayList<Integer> rotationList;
 	private ArrayList<File> images;
 	private ArrayList<Task> tasksList;
 	private File subImage;
 	private HashMap<String, ArrayList<Point>> resultMap;
+	private UUID id;
+	private OrderBarrier barrier;
 
 	public Order(ArrayList<Integer> rotationList, ArrayList<File> images, File subImage) {
 		this.rotationList = rotationList;
@@ -19,6 +26,8 @@ public class Order {
 		tasksList = new ArrayList<Task>();
 		resultMap = new HashMap<String, ArrayList<Point>>();
 		createTasks();
+		id = UUID.randomUUID();
+		barrier = new OrderBarrier(tasksList.size());
 	}
 
 	private ArrayList<Task> createTasks() {
@@ -27,9 +36,9 @@ public class Order {
 		System.out.println("Images: " + images.size());
 		for(File fImage : images) {
 			for(int r : rotationList) {
-				tasksList.add(new Task(fImage, subImage, r));
+				tasksList.add(new Task(fImage, subImage, r, this));
 			}
-			resultMap.put(fImage.getAbsolutePath(), new ArrayList<Point>());
+			resultMap.put(fImage.getName(), new ArrayList<Point>());
 		}
 		System.out.println("Number of Tasks: " + tasksList.size());
 		return tasksList;
@@ -61,5 +70,21 @@ public class Order {
 				resultMap.get(imageName).add(p);
 			}
 		}
+	}
+	
+	public File getFileByName(String name) {
+		for(File f : images) {
+			if(f.getName().equals(name)) {
+				return f;
+			}
+		}
+		return null;
+	}
+	 public UUID getId() {
+		return id;
+	}
+
+	public OrderBarrier getBarrier() {
+		return barrier;
 	}
 }

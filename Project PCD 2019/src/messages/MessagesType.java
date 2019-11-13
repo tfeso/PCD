@@ -42,6 +42,10 @@ public class MessagesType {
 	public static Message endTask() {
 		return new Message("202", "", null, null, null);
 	}
+	
+	public static Message taskFromWorker(Task task) {
+		return new Message("206", "", null, null, task);
+	}
 
 	// 3.. ORDER
 	public static Message newOrder() {

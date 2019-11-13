@@ -55,7 +55,6 @@ public class GUI {
 	private DefaultListModel<String> modelRight;
 	private File[] files;
 	private Order order;
-	private ArrayList<File> imagesList;
 	private File subImage;
 	private Client client;
 
@@ -87,7 +86,6 @@ public class GUI {
 		txtImagesFolder.setEnabled(false);
 		txtSubImage.setEnabled(false);
 		viewer = new JScrollPane(centerPanel);
-		imagesList = new ArrayList<File>();
 	}
 
 	private void buildLeft() {
@@ -165,14 +163,14 @@ public class GUI {
 					JOptionPane.showMessageDialog(frameMain, "Workers not selected or folder without images!");
 				}else {
 
-					order = new Order(getSelectedRotations(), imagesList, subImage);
+					order = new Order(getSelectedRotations(), getImageFiles(), subImage);
+					System.out.println("Order Id: " + order.getId());
 					try {
 						client.getObjectOutputStream().writeObject(MessagesType.newTask(order.getTasksList()));
 					} catch (IOException e1) {
 						System.out.println("Error to send task list to server..");
 					}
-					// new Aux(GUI.this, order);
-					// drawAllImagesInOrder();
+					//loadRightPanel();
 				}
 			}
 		});
@@ -181,7 +179,11 @@ public class GUI {
 		listRight.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) { // O down não funciona porque??
-					labelImage.setIcon(new ImageIcon("/Users/tsimao/git/PCD/Project PCD 2019/ImagesResult/" + listRight.getSelectedValue().toString()));
+					byte[] byteImage = drawImage(listRight.getSelectedValue().toString());
+
+					if(byteImage != null) {
+						labelImage.setIcon(new ImageIcon(byteImage));
+					}
 				}
 			}
 		});
@@ -189,12 +191,17 @@ public class GUI {
 		listRight.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 1) {
-					labelImage.setIcon(new ImageIcon("/Users/tsimao/git/PCD/Project PCD 2019/ImagesResult/" + listRight.getSelectedValue().toString()));
+					byte[] byteImage = drawImage(listRight.getSelectedValue().toString());
+
+					if(byteImage != null) {
+						labelImage.setIcon(new ImageIcon(byteImage));
+					}
+						
 				}
 			}
 		});
 	}
-	
+
 	public void updateWorkersInList(String workersToUpdate) {
 		modelLeft.clear();
 		String[] workersActive = workersToUpdate.split(";");
@@ -213,9 +220,14 @@ public class GUI {
 				return false;
 			}
 		});
+	}
+
+	private ArrayList<File> getImageFiles(){
+		ArrayList<File> imagesList = new ArrayList<File>();
 		for(File f : files) {
 			imagesList.add(f);
 		}
+		return imagesList;
 	}
 
 	private void chooseFolder() {
@@ -262,22 +274,31 @@ public class GUI {
 		}
 	}
 
-	private void drawAllImagesInOrder() {
+	private byte[] drawImage(String name) {
 
+		System.out.println(name);
 		for(String key : order.getResultMap().keySet()) {
 			try {
-				BufferedImage bf = Convert.fileToBufferedImage(new File(key));
-				for(Point p : order.getResultMap().get(key)) {
-					EditImage.drawRectangule(bf, (int)p.getX(), (int)p.getY(), Convert.fileToBufferedImage(subImage).getWidth(), Convert.fileToBufferedImage(subImage).getHeight(), Color.RED);
+				System.out.println(key);
+				if(key.equals(name)) {
+					System.out.println("Entrou no if");
+					BufferedImage bf = Convert.fileToBufferedImage(order.getFileByName(key));
+					for(Point p : order.getResultMap().get(key)) {
+						System.out.println("[" + (int)p.getX() + ";" + (int)p.getY() + "]");
+						EditImage.drawRectangule(bf, (int)p.getX(), (int)p.getY(), Convert.fileToBufferedImage(subImage).getWidth(), Convert.fileToBufferedImage(subImage).getHeight(), Color.RED);
+					}
+					return Convert.BufferedImageToArray(bf);
 				}
-				Convert.bufferedImageToFIle(bf, "png", "/Users/tsimao/git/PCD/Project PCD 2019/ImagesResult/" + new File(key).getName());
-				modelRight.addElement(new File(key).getName());
-				System.out.println(new File(key).getName() + " Completed!");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Search completed!");
+		return null;
 	}
-	
+
+	private void loadRightPanel() {
+		for(String key : order.getResultMap().keySet()) {
+			modelRight.addElement(new File(key).getName());
+		}
+	}
 }
