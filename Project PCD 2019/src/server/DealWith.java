@@ -48,6 +48,7 @@ public class DealWith extends Thread {
 					switch(m.getCode()) {
 						case "001": // NEW CLIENT
 							server.addDwClient(this);
+							updateWorkersInGUI();
 							break;
 						case "101": // NEW WORKER
 							rotation = Integer.parseInt(m.getContent());
@@ -55,12 +56,13 @@ public class DealWith extends Thread {
 							updateWorkersInGUI();
 							break;
 						case "201": // PUT TASKS IN BLOQUINGQUEUE
-							server.addToBarrierList(new OrderBarrier(m.getTasksList().size(), m.getTasksList().get(0).getOrder()));
+							OrderBarrier ob = new OrderBarrier(m.getTasksList().size(), m.getTasksList().get(0).getOrder());
+							server.addToBarrierList(ob);
 							for(Task t : m.getTasksList()) {
 								server.getTaskList().offer(t);
 								System.out.println("Offer: " + t.getImage() + " Rotation: " + t.getRotation());
 							}
-							wait();
+							ob.barrierEntry();
 							out.writeObject(MessagesType.endOrder());
 							break;
 						case "204": // GET TASK IN BLOQUINGQUEUE
@@ -72,7 +74,7 @@ public class DealWith extends Thread {
 							Task taskFromWorker = m.getTaskDelivery();
 							OrderBarrier barrier = server.getBarrierByOrderId(taskFromWorker.getOrder().getId());
 							barrier.getOrder().addPointToMap(taskFromWorker.getImage().getName(), taskFromWorker.getPointsList());
-							barrier.barrierEntry();
+							barrier.barrierEntryTeste();
 							break;
 					}
 				} catch (ClassNotFoundException e) {

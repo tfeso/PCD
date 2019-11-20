@@ -25,7 +25,6 @@ public class Worker extends Thread {
 	private Socket s;
 
 	public Worker(String address, int PORTO, int rotation) {
-
 		try {
 			this.PORTO = PORTO;
 			this.rotation = rotation;

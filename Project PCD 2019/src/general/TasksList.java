@@ -6,7 +6,7 @@ import java.util.Queue;
 public class TasksList<T> {
 
 	private Queue<T> tasksList;
-	private final static int LIMIT = 2;
+	private final static int LIMIT = 100000;
 	
 	public TasksList() {
 		tasksList = new LinkedList<>();
@@ -29,7 +29,7 @@ public class TasksList<T> {
 		return temp;
 	}
 
-	public int size() {
+	public synchronized int size() {
 		return tasksList.size();
 	}
 

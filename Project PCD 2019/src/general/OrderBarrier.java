@@ -1,7 +1,5 @@
 package general;
-
 import java.io.Serializable;
-
 import client.Order;
 
 public class OrderBarrier implements Barrier, Serializable {
@@ -17,17 +15,29 @@ public class OrderBarrier implements Barrier, Serializable {
 	}
 
 	public synchronized void barrierEntry() {
-		tasksCompleted++;
-		while (size() != numberOfTasks) {
+		while (tasksCompleted != numberOfTasks) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		notifyAll();
 		clear();
 	}
+	
+	public synchronized void barrierEntryTeste() {
+		tasksCompleted++;
+		notifyAll();
+	}
+	
+	/*
+	public synchronized void barrierEntry() {
+		tasksCompleted++;
+		while (size() == numberOfTasks) {
+			notifyAll();
+			clear();
+		}
+	}*/
 	
 	public synchronized int size() {
 		return tasksCompleted;

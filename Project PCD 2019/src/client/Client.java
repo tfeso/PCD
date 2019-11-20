@@ -51,13 +51,15 @@ public class Client {
 
 	private void serve() throws IOException {
 		out.writeObject(MessagesType.newClient());
+		System.out.println("Enviou mensagem");
 		while(true) {
-			Message m;
 			try {
-				m = (Message) in.readObject();
+				Message m = (Message) in.readObject();
+				System.out.println("Code: " + m.getCode());
 				
 				switch(m.getCode()) {
 					case "103":
+						System.out.println("Update Workers");
 						gui.updateWorkersInList(m.getWorkersToUpdate());
 						break;
 					case "302":
