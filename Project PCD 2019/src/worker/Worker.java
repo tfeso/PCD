@@ -58,8 +58,10 @@ public class Worker extends Thread {
 							ArrayList<Point> listPoints = EditImage.findSubImageinImage(m.getTaskDelivery().getRotation(), 
 													      								Convert.fileToBufferedImage(m.getTaskDelivery().getImage()), 
 													      								Convert.fileToBufferedImage(m.getTaskDelivery().getSubImage()));
-							if(listPoints != null) {
-								for(Point p : listPoints) {
+							if(listPoints != null) 
+							{
+								for(Point p : listPoints) 
+								{
 									m.getTaskDelivery().addPoints(p);
 								}
 							}							

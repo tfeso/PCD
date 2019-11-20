@@ -162,7 +162,7 @@ public class GUI {
 				}else if(!workersIsSelected() || !(new File(txtImagesFolder.getText()).listFiles().length > 0)) {
 					JOptionPane.showMessageDialog(frameMain, "Workers not selected or folder without images!");
 				}else {
-
+					removeRightPanel();
 					order = new Order(getSelectedRotations(), getImageFiles(), subImage);
 					System.out.println("Order Id: " + order.getId());
 					try {
@@ -170,11 +170,9 @@ public class GUI {
 					} catch (IOException e1) {
 						System.out.println("Error to send task list to server..");
 					}
-					//loadRightPanel();
 				}
 			}
 		});
-
 
 		listRight.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
@@ -195,8 +193,7 @@ public class GUI {
 
 					if(byteImage != null) {
 						labelImage.setIcon(new ImageIcon(byteImage));
-					}
-						
+					}	
 				}
 			}
 		});
@@ -296,9 +293,13 @@ public class GUI {
 		return null;
 	}
 
-	private void loadRightPanel() {
+	public void loadRightPanel() {
 		for(String key : order.getResultMap().keySet()) {
 			modelRight.addElement(new File(key).getName());
 		}
+	}
+	
+	private void removeRightPanel() {
+		modelRight.clear();
 	}
 }

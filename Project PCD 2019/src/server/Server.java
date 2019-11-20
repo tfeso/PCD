@@ -7,29 +7,29 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
-import client.Order;
+import general.OrderBarrier;
 import general.TasksList;
 
 public class Server {
 
 	public static int PORTO;
-	private ArrayList<DealWithClient> dwClientsList;
-	private ArrayList<DealWithWorker> dwWorkersList;
+	private ArrayList<DealWith> dwClientsList;
+	private ArrayList<DealWith> dwWorkersList;
+	private ArrayList<OrderBarrier> barrierList;
 	private HashMap<Integer, Integer> workersByRotation;
-	private TasksList sharedResourceTasks;
-	private ArrayList<Order> ordersList;
+	private TasksList taskList;
 
 	public Server(int Porto) {
 		this.PORTO = Porto;
+		workersByRotation = new HashMap<Integer, Integer>();
 	}
 
 	public void startServing() throws IOException {
 
-		dwClientsList = new ArrayList<DealWithClient>();
-		dwWorkersList = new ArrayList<DealWithWorker>();
-		sharedResourceTasks = new TasksList();
-		ordersList = new ArrayList<Order>();
-		workersByRotation = new HashMap<Integer, Integer>();
+		dwClientsList = new ArrayList<DealWith>();
+		dwWorkersList = new ArrayList<DealWith>();
+		barrierList = new ArrayList<OrderBarrier>();
+		taskList = new TasksList();
 		ServerSocket ss = new ServerSocket(PORTO);
 		System.out.println("The server launch the ServerSocket: " + ss);
 
@@ -55,19 +55,15 @@ public class Server {
 	}
 
 	public TasksList getTaskList() {
-		return sharedResourceTasks;
+		return taskList;
 	}
 
-	public ArrayList<DealWithWorker> getDwWorkers(){
+	public ArrayList<DealWith> getDwWorkers(){
 		return dwWorkersList;
 	}
 
-	public ArrayList<DealWithClient> getDwClients(){
+	public ArrayList<DealWith> getDwClients(){
 		return dwClientsList;
-	}
-	
-	public ArrayList<Order> getOrdersList() {
-		return ordersList;
 	}
 
 	public void removeDW(DealWith dealWith, int rotation) {
@@ -101,12 +97,12 @@ public class Server {
 		}
 	}
 
-	public void addDwClient(DealWithClient dw) {
+	public void addDwClient(DealWith dw) {
 		dwClientsList.add(dw);
 		System.out.println("Number Of Clients: " + dwClientsList.size());
 	}
 
-	public void addDwWorker(DealWithWorker dw, int rotation) {
+	public void addDwWorker(DealWith dw, int rotation) {
 		dwWorkersList.add(dw);
 		if(workersByRotation.containsKey(rotation)) {
 			int numberOfActiveWorkers = workersByRotation.get(rotation) + 1;
@@ -128,19 +124,20 @@ public class Server {
 	public HashMap<Integer, Integer> getWorkersByRotation() {
 		return workersByRotation;
 	}
-	
-	public Order getOrderById(UUID id) {
-		
-		for(Order o : ordersList) {
-			if(o.getId().equals(id)) {
-				System.out.println("Tasks completed: " + o.getBarrier().size());
-				return o;
-			}
+
+	public OrderBarrier getBarrierByOrderId(UUID orderId) {
+		for(OrderBarrier ob : barrierList) {
+			if(ob.getOrder().getId().equals(orderId))
+				return ob;
 		}
 		return null;
 	}
-
+	
+	public void addToBarrierList(OrderBarrier barrier) {
+		barrierList.add(barrier);
+	}
+	
 	private TasksList getTasksList() {
-		return sharedResourceTasks;
+		return taskList;
 	}
 }

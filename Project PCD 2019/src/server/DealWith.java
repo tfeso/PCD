@@ -3,11 +3,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
-import javax.swing.JOptionPane;
-
-import client.Order;
 import client.Task;
+import general.OrderBarrier;
 import messages.Message;
 import messages.MessagesType;
 
@@ -24,77 +21,72 @@ public class DealWith extends Thread {
 		this.s = s;
 	}
 
-//	@Override
-//	public void run() {
-//
-//		try {
-//			doConnections();
-//			serve();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}finally {
-//			System.out.println("It's Closed!");
-//			try {
-//				s.close();
-//			} catch (IOException e) {
-//				System.out.println("Error in Socket Close!");
-//			}
-//		}
-//	}
+	@Override
+	public void run() {
 
-//	private void serve() throws IOException {
-//		try {
-//			while(true) {
-//				try {
-//					Message m = (Message) in.readObject();
-//					System.out.println("Code: " + m.getCode());
-//					switch(m.getCode()) {
-//						case "001": // NEW CLIENT
-//							server.addDwClient(this);
-//							break;
-//						case "101": // NEW WORKER
-//							rotation = Integer.parseInt(m.getContent());
-//							server.addDwWorker(this, rotation);
-//							updateWorkersInGUI();
-//							break;
-//						case "201": // NEW TASKS IN BLOQUINGQUEUE
-//							server.getOrdersList().add(m.getTasksList().get(0).getOrder());
-//							for(Task t : m.getTasksList()) {
-//								server.getTaskList().offer(t);
-//								System.out.println("Offer: " + t.getImage() + " Rotation: " + t.getRotation());
-//							}
-//							break;
-//						case "204": // GET TASK IN BLOQUINGQUEUE
-//							out.writeObject(MessagesType.taskDelivery((Task)server.getTaskList().poll()));
-//							break;
-//						case "206": // RECEIVED TASK FROM WORKER
-//							Task t = m.getTaskDelivery();
-//							Order order = server.getOrderById(t.getOrder().getId());
-//							order.addPointToMap(t.getImage().getName(), t.getPointsList());
-//							order.getBarrier().barrierEntry();
-//							JOptionPane.showMessageDialog(null, "Tasks completed: " + order.getBarrier().size());
-//							break;
-//					}
-//				} catch (ClassNotFoundException e) {
-//					System.out.println("Class message not exists");
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			server.removeDW(this, rotation);
-//			updateWorkersInGUI();
-//		}
-//	}
+		try {
+			doConnections();
+			serve();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			System.out.println("It's Closed!");
+			try {
+				s.close();
+			} catch (IOException e) {
+				System.out.println("Error in Socket Close!");
+			}
+		}
+	}
 
-	public Socket getSocket() {
-			return s;
+	private void serve() throws IOException {
+		try {
+			while(true) {
+				try {
+					Message m = (Message) in.readObject();
+					System.out.println("Code: " + m.getCode());
+					switch(m.getCode()) {
+						case "001": // NEW CLIENT
+							server.addDwClient(this);
+							break;
+						case "101": // NEW WORKER
+							rotation = Integer.parseInt(m.getContent());
+							server.addDwWorker(this, rotation);
+							updateWorkersInGUI();
+							break;
+						case "201": // PUT TASKS IN BLOQUINGQUEUE
+							server.addToBarrierList(new OrderBarrier(m.getTasksList().size(), m.getTasksList().get(0).getOrder()));
+							for(Task t : m.getTasksList()) {
+								server.getTaskList().offer(t);
+								System.out.println("Offer: " + t.getImage() + " Rotation: " + t.getRotation());
+							}
+							wait();
+							out.writeObject(MessagesType.endOrder());
+							break;
+						case "204": // GET TASK IN BLOQUINGQUEUE
+							Task t = (Task)server.getTaskList().poll();
+							out.writeObject(MessagesType.taskDelivery(t));
+							System.out.println("Poll: " + t.getImage() + " Rotation: " + t.getRotation());
+							break;
+						case "206":
+							Task taskFromWorker = m.getTaskDelivery();
+							OrderBarrier barrier = server.getBarrierByOrderId(taskFromWorker.getOrder().getId());
+							barrier.getOrder().addPointToMap(taskFromWorker.getImage().getName(), taskFromWorker.getPointsList());
+							barrier.barrierEntry();
+							break;
+					}
+				} catch (ClassNotFoundException e) {
+					System.out.println("Class message not exists");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			server.removeDW(this, rotation);
+			updateWorkersInGUI();
+		}
 	}
-	
-	public Server getServer() {
-		return server;
-	}
-	
-	public void doConnections() throws IOException {
+
+	private void doConnections() throws IOException {
 		out = new ObjectOutputStream(s.getOutputStream());
 		in = new ObjectInputStream(s.getInputStream());
 	}
@@ -107,8 +99,5 @@ public class DealWith extends Thread {
 				System.out.println("Error to update workers");
 			}
 		}
-	}
-	
-
-	
+	}	
 }

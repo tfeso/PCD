@@ -2,13 +2,18 @@ package general;
 
 import java.io.Serializable;
 
+import client.Order;
+
 public class OrderBarrier implements Barrier, Serializable {
 
 	private int numberOfTasks;
 	private int tasksCompleted;
+	private Order order;
 	
-	public OrderBarrier(int numberOfTasks) {
+	public OrderBarrier(int numberOfTasks, Order order) {
 		this.numberOfTasks = numberOfTasks;
+		this.order = order;
+		tasksCompleted = 0;
 	}
 
 	public synchronized void barrierEntry() {
@@ -24,11 +29,15 @@ public class OrderBarrier implements Barrier, Serializable {
 		clear();
 	}
 	
-	public int size() {
+	public synchronized int size() {
 		return tasksCompleted;
 	}
 	
-	public void clear() {
+	public synchronized void clear() {
 		tasksCompleted = 0;
+	}
+	
+	public synchronized Order getOrder() {
+		return order;
 	}
 }

@@ -19,7 +19,6 @@ public class Client {
 	private InetAddress address;
 	private GUI gui;
 	private int PORTO;
-	private OrderBarrier barrier;
 
 	public Client(String address, int PORTO) {
 		try {
@@ -45,9 +44,9 @@ public class Client {
 
 		System.out.println("Address: " + address);
 		s = new Socket(address, PORTO);
+	
 		out = new ObjectOutputStream(s.getOutputStream());
 		in = new ObjectInputStream(s.getInputStream());
-
 	}
 
 	private void serve() throws IOException {
@@ -59,10 +58,14 @@ public class Client {
 				
 				switch(m.getCode()) {
 					case "103":
-						//gui.addWorkerToList(Integer.parseInt(m.getContent()));
 						gui.updateWorkersInList(m.getWorkersToUpdate());
 						break;
-					
+					case "302":
+						gui.loadRightPanel();
+						break;
+					default:
+						System.out.println("Error");
+						break;
 				}
 			
 			} catch (ClassNotFoundException e) {
@@ -82,10 +85,4 @@ public class Client {
 	public ObjectOutputStream getObjectOutputStream() {
 		return out;
 	}
-	
-
-	
-	
-	
-
 }

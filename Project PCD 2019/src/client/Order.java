@@ -17,7 +17,6 @@ public class Order implements Serializable {
 	private File subImage;
 	private HashMap<String, ArrayList<Point>> resultMap;
 	private UUID id;
-	private OrderBarrier barrier;
 
 	public Order(ArrayList<Integer> rotationList, ArrayList<File> images, File subImage) {
 		this.rotationList = rotationList;
@@ -27,7 +26,6 @@ public class Order implements Serializable {
 		resultMap = new HashMap<String, ArrayList<Point>>();
 		createTasks();
 		id = UUID.randomUUID();
-		barrier = new OrderBarrier(tasksList.size());
 	}
 
 	private ArrayList<Task> createTasks() {
@@ -82,9 +80,5 @@ public class Order implements Serializable {
 	}
 	 public UUID getId() {
 		return id;
-	}
-
-	public OrderBarrier getBarrier() {
-		return barrier;
 	}
 }
