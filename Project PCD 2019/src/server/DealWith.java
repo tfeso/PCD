@@ -3,6 +3,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import javax.swing.JOptionPane;
+
 import client.Task;
 import general.OrderBarrier;
 import messages.Message;
@@ -56,25 +59,39 @@ public class DealWith extends Thread {
 							updateWorkersInGUI();
 							break;
 						case "201": // PUT TASKS IN BLOQUINGQUEUE
-							OrderBarrier ob = new OrderBarrier(m.getTasksList().size(), m.getTasksList().get(0).getOrder());
-							server.addToBarrierList(ob);
+							OrderBarrier ob = server.getBarrierByOrderId(m.getContent());
+							int numberOfTasks = m.getTasksList().size();
+							
+							if(ob == null){
+								ob = new OrderBarrier(numberOfTasks, m.getTasksList().get(0).getOrder());
+								server.addToBarrierList(ob);
+							}else {
+								ob.setNumberOfTasks(numberOfTasks);
+								ob.setOrder(m.getTasksList().get(0).getOrder());
+							}
 							for(Task t : m.getTasksList()) {
 								server.getTaskList().offer(t);
 								System.out.println("Offer: " + t.getImage() + " Rotation: " + t.getRotation());
 							}
-							ob.barrierEntry();
-							out.writeObject(MessagesType.endOrder());
+							ob.ClientbarrierEntry();
+							out.writeObject(MessagesType.endOrder(ob.getOrder()));
 							break;
 						case "204": // GET TASK IN BLOQUINGQUEUE
-							Task t = (Task)server.getTaskList().poll();
+							Task t = server.getTaskList().poll(rotation);
 							out.writeObject(MessagesType.taskDelivery(t));
 							System.out.println("Poll: " + t.getImage() + " Rotation: " + t.getRotation());
 							break;
 						case "206":
 							Task taskFromWorker = m.getTaskDelivery();
-							OrderBarrier barrier = server.getBarrierByOrderId(taskFromWorker.getOrder().getId());
+							
+							/* JOptionPane.showMessageDialog(null, taskFromWorker.getImage().getName() + System.lineSeparator() + 
+																taskFromWorker.getRotation() + System.lineSeparator() +
+																taskFromWorker.getPointsList().size() + System.lineSeparator() +
+																taskFromWorker.getNumberOfPoints());
+							*/
+							OrderBarrier barrier = server.getBarrierByOrderId(taskFromWorker.getOrder().getId().toString());
 							barrier.getOrder().addPointToMap(taskFromWorker.getImage().getName(), taskFromWorker.getPointsList());
-							barrier.barrierEntryTeste();
+							barrier.WorkerbarrierEntry();
 							break;
 					}
 				} catch (ClassNotFoundException e) {

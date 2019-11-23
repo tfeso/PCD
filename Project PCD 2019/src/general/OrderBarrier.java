@@ -14,7 +14,7 @@ public class OrderBarrier implements Barrier, Serializable {
 		tasksCompleted = 0;
 	}
 
-	public synchronized void barrierEntry() {
+	public synchronized void ClientbarrierEntry() {
 		while (tasksCompleted != numberOfTasks) {
 			try {
 				wait();
@@ -25,19 +25,10 @@ public class OrderBarrier implements Barrier, Serializable {
 		clear();
 	}
 	
-	public synchronized void barrierEntryTeste() {
+	public synchronized void WorkerbarrierEntry() {
 		tasksCompleted++;
 		notifyAll();
 	}
-	
-	/*
-	public synchronized void barrierEntry() {
-		tasksCompleted++;
-		while (size() == numberOfTasks) {
-			notifyAll();
-			clear();
-		}
-	}*/
 	
 	public synchronized int size() {
 		return tasksCompleted;
@@ -49,5 +40,13 @@ public class OrderBarrier implements Barrier, Serializable {
 	
 	public synchronized Order getOrder() {
 		return order;
+	}
+	
+	public void setNumberOfTasks(int numberOfTasks) {
+		this.numberOfTasks = numberOfTasks;
+	}
+	
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 }

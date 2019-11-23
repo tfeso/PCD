@@ -3,7 +3,6 @@ import java.awt.Point;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class Task implements Serializable {
 
@@ -12,6 +11,7 @@ public class Task implements Serializable {
 	private File subImage;
 	private int rotation;
 	private ArrayList<Point> pointsList;
+	private int numberOfPoints = 0;
 
 	public Task(File image, File subImage, int rotation, Order order) {
 		this.image = image;
@@ -23,6 +23,11 @@ public class Task implements Serializable {
 	
 	public void addPoints(Point point) {
 		pointsList.add(point);
+		numberOfPoints++;
+	}
+	
+	public void setListPoints(ArrayList<Point> pointsList) {
+		this.pointsList = pointsList;
 	}
 	
 	public int getRotation() {
@@ -43,6 +48,10 @@ public class Task implements Serializable {
 	
 	public ArrayList<Point> getPointsList() {
 		return pointsList;
+	}
+	
+	public int getNumberOfPoints() {
+		return numberOfPoints;
 	}
 	
 }

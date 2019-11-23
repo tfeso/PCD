@@ -16,16 +16,16 @@ public class Order implements Serializable {
 	private ArrayList<Task> tasksList;
 	private File subImage;
 	private HashMap<String, ArrayList<Point>> resultMap;
-	private UUID id;
+	private UUID idClient;
 
-	public Order(ArrayList<Integer> rotationList, ArrayList<File> images, File subImage) {
+	public Order(ArrayList<Integer> rotationList, ArrayList<File> images, File subImage, UUID idClient) {
 		this.rotationList = rotationList;
 		this.images = images;
 		this.subImage = subImage;
+		this.idClient = idClient;
 		tasksList = new ArrayList<Task>();
 		resultMap = new HashMap<String, ArrayList<Point>>();
 		createTasks();
-		id = UUID.randomUUID();
 	}
 
 	private ArrayList<Task> createTasks() {
@@ -42,12 +42,13 @@ public class Order implements Serializable {
 		return tasksList;
 	}
 
-	private void printArrayList() {
+	public void printArrayList() {
 
+		System.out.println("PrintArrayList");
 		for (String key : resultMap.keySet()) {
 
 			ArrayList<Point> listOfPoints = resultMap.get(key);
-			System.out.println("Key: " + key);
+			System.out.println("Key PAL: " + key);
 			for(Point p : listOfPoints) {
 				System.out.println("Px: " + p.x + " Py: " + p.y);
 			}
@@ -63,10 +64,13 @@ public class Order implements Serializable {
 	}
 
 	public void addPointToMap(String imageName, ArrayList<Point> pointsList) {
+		System.out.println("AddPointToMap: " + imageName);
 		if(resultMap.containsKey(imageName)) {
+			System.out.println("true");
 			for(Point p : pointsList) {
 				resultMap.get(imageName).add(p);
-			}
+				System.out.println("[ X: " + p.getX() + " ; " + p.getY() + "]");
+			} 
 		}
 	}
 	
@@ -78,7 +82,8 @@ public class Order implements Serializable {
 		}
 		return null;
 	}
+	
 	 public UUID getId() {
-		return id;
+		return idClient;
 	}
 }

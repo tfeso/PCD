@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.UUID;
 
 import general.Barrier;
 import general.OrderBarrier;
@@ -19,11 +20,13 @@ public class Client {
 	private InetAddress address;
 	private GUI gui;
 	private int PORTO;
+	private UUID idClient;
 
 	public Client(String address, int PORTO) {
 		try {
 			this.PORTO = PORTO;
 			this.address = InetAddress.getByName(address);
+			idClient = UUID.randomUUID();
 			connectServer();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -64,6 +67,8 @@ public class Client {
 						break;
 					case "302":
 						gui.loadRightPanel();
+						gui.getSearchButton();
+						gui.setOrder(m.getOrder());
 						break;
 					default:
 						System.out.println("Error");
@@ -86,5 +91,9 @@ public class Client {
 
 	public ObjectOutputStream getObjectOutputStream() {
 		return out;
+	}
+	
+	public UUID getIdClient() {
+		return idClient;
 	}
 }

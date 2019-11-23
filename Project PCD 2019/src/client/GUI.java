@@ -81,8 +81,11 @@ public class GUI {
 		btnImagesFolder = new JButton("Folder");
 		btnSubImage = new JButton("Image");
 		btnSearch = new JButton("Search");
+
 		txtImagesFolder = new JTextField();
 		txtSubImage = new JTextField();
+		// txtImagesFolder = new JTextField("/Users/tsimao/Desktop/5 imagens");
+		// txtSubImage = new JTextField("/Users/tsimao/Desktop/supermam/Superman.jpg");
 		txtImagesFolder.setEnabled(false);
 		txtSubImage.setEnabled(false);
 		viewer = new JScrollPane(centerPanel);
@@ -156,17 +159,21 @@ public class GUI {
 		btnSearch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				
+				btnSearch.setEnabled(false);
 				if(txtImagesFolder.getText().isEmpty() || txtSubImage.getText().isEmpty()) {
 					JOptionPane.showMessageDialog(frameMain, "Folder or subImage is empty!");
+					btnSearch.setEnabled(true);
 				}else if(!workersIsSelected() || !(new File(txtImagesFolder.getText()).listFiles().length > 0)) {
 					JOptionPane.showMessageDialog(frameMain, "Workers not selected or folder without images!");
+					btnSearch.setEnabled(true);
 				}else {
 					removeRightPanel();
-					order = new Order(getSelectedRotations(), getImageFiles(), subImage);
+					labelImage.setIcon(new ImageIcon(new byte[0]));
+					order = new Order(getSelectedRotations(), getImageFiles(), subImage, client.getIdClient());
 					System.out.println("Order Id: " + order.getId());
 					try {
-						client.getObjectOutputStream().writeObject(MessagesType.newTask(order.getTasksList()));
+						client.getObjectOutputStream().writeObject(MessagesType.newTask(order.getTasksList(), client.getIdClient()));
 					} catch (IOException e1) {
 						System.out.println("Error to send task list to server..");
 					}
@@ -177,9 +184,13 @@ public class GUI {
 		listRight.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) { // O down não funciona porque??
+					System.out.println("ListRight - VK_UP e VK_DOWN");
+					System.out.println(listRight.getSelectedValue().toString());
+					
 					byte[] byteImage = drawImage(listRight.getSelectedValue().toString());
-
+					
 					if(byteImage != null) {
+						System.out.println("byteImage != null");
 						labelImage.setIcon(new ImageIcon(byteImage));
 					}
 				}
@@ -189,10 +200,16 @@ public class GUI {
 		listRight.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 1) {
+					System.out.println("ListRight - ClickCount 1");
+					System.out.println(listRight.getSelectedValue().toString());
+					
 					byte[] byteImage = drawImage(listRight.getSelectedValue().toString());
-
+					
 					if(byteImage != null) {
+						System.out.println("byteImage != null");
 						labelImage.setIcon(new ImageIcon(byteImage));
+						
+						order.printArrayList();
 					}	
 				}
 			}
@@ -273,12 +290,11 @@ public class GUI {
 
 	private byte[] drawImage(String name) {
 
-		System.out.println(name);
+		System.out.println("Name: " + name);
 		for(String key : order.getResultMap().keySet()) {
 			try {
-				System.out.println(key);
+				System.out.println("Key: " + key);
 				if(key.equals(name)) {
-					System.out.println("Entrou no if");
 					BufferedImage bf = Convert.fileToBufferedImage(order.getFileByName(key));
 					for(Point p : order.getResultMap().get(key)) {
 						System.out.println("[" + (int)p.getX() + ";" + (int)p.getY() + "]");
@@ -294,12 +310,22 @@ public class GUI {
 	}
 
 	public void loadRightPanel() {
+		System.out.println("Init LoadRightPanel");
 		for(String key : order.getResultMap().keySet()) {
+			System.out.println("Key: " + key);
 			modelRight.addElement(new File(key).getName());
 		}
 	}
 	
 	private void removeRightPanel() {
 		modelRight.clear();
+	}
+
+	public void getSearchButton() {
+		btnSearch.setEnabled(true);
+	}
+	
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 }

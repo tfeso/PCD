@@ -47,6 +47,7 @@ public class Worker extends Thread {
 		try {
 			out.writeObject(MessagesType.newWorker(rotation));
 			while(!isInterrupted()) {
+			
 				out.writeObject(MessagesType.getTask());
 				
 				try {
@@ -54,23 +55,31 @@ public class Worker extends Thread {
 					switch(m.getCode()) {
 						case "205":
 							Task t = m.getTaskDelivery();
-							ArrayList<Point> listPoints = EditImage.findSubImageinImage(m.getTaskDelivery().getRotation(), 
-													      								Convert.fileToBufferedImage(m.getTaskDelivery().getImage()), 
-													      								Convert.fileToBufferedImage(m.getTaskDelivery().getSubImage()));
+							System.out.println("Image name: " + t.getImage().getName());
+							ArrayList<Point> listPoints = EditImage.findSubImageinImage(t.getRotation(), 
+													      								Convert.fileToBufferedImage(t.getImage()), 
+													      								Convert.fileToBufferedImage(t.getSubImage()));
+							
+							System.out.println("Rotation: " + rotation);
+							System.out.println("List Points: " + listPoints.size());
+							t.setListPoints(listPoints);
+							System.out.println("Task Points: " + t.getPointsList().size());
+							System.out.println("-------------------------------------");
+							/*
 							if(listPoints != null) 
 							{
 								for(Point p : listPoints) 
 								{
-									m.getTaskDelivery().addPoints(p);
+									t.addPoints(p);
+									System.out.println("[" + (int)p.getX() + ";" + (int)p.getY() + "]");
 								}
-							}							
+							}	*/
 							out.writeObject(MessagesType.taskFromWorker(t));
 							break;
 					}
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import general.OrderBarrier;
-import general.TasksList;
+import general.TasksBlockingQueue;
 
 public class Server {
 
@@ -17,7 +17,7 @@ public class Server {
 	private ArrayList<DealWith> dwWorkersList;
 	private ArrayList<OrderBarrier> barrierList;
 	private HashMap<Integer, Integer> workersByRotation;
-	private TasksList taskList;
+	private TasksBlockingQueue taskList;
 
 	public Server(int Porto) {
 		this.PORTO = Porto;
@@ -29,7 +29,7 @@ public class Server {
 		dwClientsList = new ArrayList<DealWith>();
 		dwWorkersList = new ArrayList<DealWith>();
 		barrierList = new ArrayList<OrderBarrier>();
-		taskList = new TasksList();
+		taskList = new TasksBlockingQueue();
 		ServerSocket ss = new ServerSocket(PORTO);
 		System.out.println("The server launch the ServerSocket: " + ss);
 
@@ -54,7 +54,7 @@ public class Server {
 		}
 	}
 
-	public TasksList getTaskList() {
+	public TasksBlockingQueue getTaskList() {
 		return taskList;
 	}
 
@@ -125,11 +125,14 @@ public class Server {
 		return workersByRotation;
 	}
 
-	public OrderBarrier getBarrierByOrderId(UUID orderId) {
+	public OrderBarrier getBarrierByOrderId(String orderId) {
 		for(OrderBarrier ob : barrierList) {
-			if(ob.getOrder().getId().equals(orderId))
+			if(ob.getOrder().getId().toString().equals(orderId)) {
+				System.out.println("Encontrou barreira: " + ob.getOrder().getId().toString());
 				return ob;
+			}
 		}
+		System.out.println("Não encontrou barreira");
 		return null;
 	}
 	
@@ -137,7 +140,7 @@ public class Server {
 		barrierList.add(barrier);
 	}
 	
-	private TasksList getTasksList() {
+	private TasksBlockingQueue getTasksList() {
 		return taskList;
 	}
 }
