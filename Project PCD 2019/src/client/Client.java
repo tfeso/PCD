@@ -4,11 +4,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.UUID;
 
-import general.Barrier;
-import general.OrderBarrier;
 import messages.Message;
 import messages.MessagesType;
 

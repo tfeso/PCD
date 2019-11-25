@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-import general.Barrier;
-import general.OrderBarrier;
-
 public class Order implements Serializable {
 
 	private ArrayList<Integer> rotationList;

@@ -1,5 +1,6 @@
 package general;
 import java.io.Serializable;
+
 import client.Order;
 
 public class OrderBarrier implements Barrier, Serializable {

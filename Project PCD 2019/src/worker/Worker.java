@@ -7,8 +7,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import client.Task;
 import general.Convert;
 import general.EditImage;
@@ -65,15 +63,16 @@ public class Worker extends Thread {
 							t.setListPoints(listPoints);
 							System.out.println("Task Points: " + t.getPointsList().size());
 							System.out.println("-------------------------------------");
-							/*
-							if(listPoints != null) 
-							{
-								for(Point p : listPoints) 
-								{
-									t.addPoints(p);
-									System.out.println("[" + (int)p.getX() + ";" + (int)p.getY() + "]");
-								}
-							}	*/
+							
+//							if(listPoints != null) 
+//							{
+//								for(Point p : listPoints) 
+//								{
+//									t.addPoints(p);
+//									System.out.println("[" + (int)p.getX() + ";" + (int)p.getY() + "]");
+//								}
+//							}
+							
 							out.writeObject(MessagesType.taskFromWorker(t));
 							break;
 					}

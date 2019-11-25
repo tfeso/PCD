@@ -2,6 +2,7 @@ package general;
 
 import java.util.LinkedList;
 import java.util.Queue;
+
 import client.Task;
 
 public class TasksBlockingQueue {
