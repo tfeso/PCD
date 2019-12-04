@@ -55,14 +55,14 @@ public class Worker extends Thread {
 							Task t = m.getTaskDelivery();
 							System.out.println("Image name: " + t.getImage().getName());
 							ArrayList<Point> listPoints = EditImage.findSubImageinImage(t.getRotation(), 
-													      								Convert.bytearrayToBufferedImage(t.getImage().getImage()), 
-													      								Convert.bytearrayToBufferedImage(t.getSubImage().getImage()));
+													      								Convert.fileToBufferedImage(t.getImage()), 
+													      								Convert.fileToBufferedImage(t.getSubImage()));
 							
 							System.out.println("Rotation: " + rotation);
-							if(listPoints != null) {
-								System.out.println("List Points: " + listPoints.size());
-								t.setListPoints(listPoints);
-							}
+							System.out.println("List Points: " + listPoints.size());
+							t.setListPoints(listPoints);
+							System.out.println("Task Points: " + t.getPointsList().size());
+							System.out.println("-------------------------------------");
 							
 							out.writeObject(MessagesType.taskFromWorker(t));
 							out.reset();
@@ -72,7 +72,6 @@ public class Worker extends Thread {
 					e.printStackTrace();
 				}
 			}
-			out.writeObject(MessagesType.workerIsDead());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

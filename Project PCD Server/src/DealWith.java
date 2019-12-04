@@ -1,13 +1,9 @@
-package server;
+
 import java.io.IOException;
+import utilsMethods.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
-import client.Task;
-import general.OrderBarrier;
-import messages.Message;
-import messages.MessagesType;
 
 public class DealWith extends Thread {
 

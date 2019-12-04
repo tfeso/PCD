@@ -1,4 +1,4 @@
-package worker;
+
 import java.awt.Point;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,12 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-
-import client.Task;
-import general.Convert;
-import general.EditImage;
-import messages.Message;
-import messages.MessagesType;
+import utilsMethods.*;
 
 public class Worker extends Thread {
 
