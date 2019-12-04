@@ -7,13 +7,13 @@ import java.util.ArrayList;
 public class Task implements Serializable {
 
 	private Order order;
-	private File image;
-	private File subImage;
+	private CustomImage image;
+	private CustomImage subImage;
 	private int rotation;
 	private ArrayList<Point> pointsList;
 	private int numberOfPoints = 0;
 
-	public Task(File image, File subImage, int rotation, Order order) {
+	public Task(CustomImage image, CustomImage subImage, int rotation, Order order) {
 		this.image = image;
 		this.subImage = subImage;
 		this.rotation = rotation;
@@ -34,11 +34,11 @@ public class Task implements Serializable {
 		return rotation;
 	}
 	
-	public File getSubImage() {
+	public CustomImage getSubImage() {
 		return subImage;
 	}
 	
-	public File getImage() {
+	public CustomImage getImage() {
 		return image;
 	}
 	

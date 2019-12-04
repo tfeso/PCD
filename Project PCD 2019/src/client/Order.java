@@ -9,13 +9,13 @@ import java.util.UUID;
 public class Order implements Serializable {
 
 	private ArrayList<Integer> rotationList;
-	private ArrayList<File> images;
+	private ArrayList<CustomImage> images;
 	private ArrayList<Task> tasksList;
-	private File subImage;
+	private CustomImage subImage;
 	private HashMap<String, ArrayList<Point>> resultMap;
 	private UUID idClient;
 
-	public Order(ArrayList<Integer> rotationList, ArrayList<File> images, File subImage, UUID idClient) {
+	public Order(ArrayList<Integer> rotationList, ArrayList<CustomImage> images, CustomImage subImage, UUID idClient) {
 		this.rotationList = rotationList;
 		this.images = images;
 		this.subImage = subImage;
@@ -29,11 +29,11 @@ public class Order implements Serializable {
 
 		System.out.println("Rotations: " + rotationList.size());
 		System.out.println("Images: " + images.size());
-		for(File fImage : images) {
+		for(CustomImage ci : images) {
 			for(int r : rotationList) {
-				tasksList.add(new Task(fImage, subImage, r, this));
+				tasksList.add(new Task(ci, subImage, r, this));
 			}
-			resultMap.put(fImage.getName(), new ArrayList<Point>());
+			resultMap.put(ci.getName(), new ArrayList<Point>());
 		}
 		System.out.println("Number of Tasks: " + tasksList.size());
 		return tasksList;
@@ -71,10 +71,10 @@ public class Order implements Serializable {
 		}
 	}
 	
-	public File getFileByName(String name) {
-		for(File f : images) {
-			if(f.getName().equals(name)) {
-				return f;
+	public CustomImage getFileByName(String name) {
+		for(CustomImage ci : images) {
+			if(ci.getName().equals(name)) {
+				return ci;
 			}
 		}
 		return null;

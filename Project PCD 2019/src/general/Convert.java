@@ -35,12 +35,22 @@ public class Convert {
 		BufferedImage bImageFromConvert;
 		try {
 			bImageFromConvert = ImageIO.read(in);
-			ImageIO.write(bImageFromConvert, "png", new File("/Users/tsimao/git/PCD/Project PCD 2019/newImages/out.jpg"));
+			//ImageIO.write(bImageFromConvert, "png", new File("/Users/tsimao/git/PCD/Project PCD 2019/newImages/out.jpg"));
 			return bImageFromConvert;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;		
+	}
+	
+	public static byte [] FileToByteArray(File file) {
+		
+		try {
+			return BufferedImageToArray(fileToBufferedImage(file));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public static void bufferedImageToFIle(BufferedImage bufferedImage, String extension, String path) {

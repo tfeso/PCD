@@ -55,25 +55,18 @@ public class Worker extends Thread {
 							Task t = m.getTaskDelivery();
 							System.out.println("Image name: " + t.getImage().getName());
 							ArrayList<Point> listPoints = EditImage.findSubImageinImage(t.getRotation(), 
-													      								Convert.fileToBufferedImage(t.getImage()), 
-													      								Convert.fileToBufferedImage(t.getSubImage()));
+													      								Convert.bytearrayToBufferedImage(t.getImage().getImage()), 
+													      								Convert.bytearrayToBufferedImage(t.getSubImage().getImage()));
 							
 							System.out.println("Rotation: " + rotation);
-							System.out.println("List Points: " + listPoints.size());
-							t.setListPoints(listPoints);
-							System.out.println("Task Points: " + t.getPointsList().size());
-							System.out.println("-------------------------------------");
+							if(listPoints != null) {
+								System.out.println("List Points: " + listPoints.size());
+								t.setListPoints(listPoints);
+							}
 							
-//							if(listPoints != null) 
-//							{
-//								for(Point p : listPoints) 
-//								{
-//									t.addPoints(p);
-//									System.out.println("[" + (int)p.getX() + ";" + (int)p.getY() + "]");
-//								}
-//							}
 							
 							out.writeObject(MessagesType.taskFromWorker(t));
+							out.reset();
 							break;
 					}
 				} catch (ClassNotFoundException e) {

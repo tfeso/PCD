@@ -53,9 +53,9 @@ public class GUI {
 	private JLabel labelImage;
 	private DefaultListModel<String> modelLeft;
 	private DefaultListModel<String> modelRight;
-	private File[] files;
+	private ArrayList<CustomImage> files;
 	private Order order;
-	private File subImage;
+	private CustomImage subImage;
 	private Client client;
 
 	public GUI(Client client) {
@@ -226,7 +226,8 @@ public class GUI {
 	}
 
 	private void loadImages() throws IOException {
-		files = new File(txtImagesFolder.getText()).listFiles(new FileFilter() {
+		
+		File [] filesAux = new File(txtImagesFolder.getText()).listFiles(new FileFilter() {
 			public boolean accept(File f) {
 				if(f.getName().endsWith(".png")) {
 					return true;
@@ -234,12 +235,16 @@ public class GUI {
 				return false;
 			}
 		});
+		files = new ArrayList<CustomImage>();
+		for(File f : filesAux) {
+			files.add(new CustomImage(f.getName(), Convert.FileToByteArray(f)));
+		}
 	}
 
-	private ArrayList<File> getImageFiles(){
-		ArrayList<File> imagesList = new ArrayList<File>();
-		for(File f : files) {
-			imagesList.add(f);
+	private ArrayList<CustomImage> getImageFiles(){
+		ArrayList<CustomImage> imagesList = new ArrayList<CustomImage>();
+		for(CustomImage ci : files) {
+			imagesList.add(ci);
 		}
 		return imagesList;
 	}
@@ -283,7 +288,7 @@ public class GUI {
 		int returnValue = jfc.showOpenDialog(null);
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = jfc.getSelectedFile();
-			subImage = selectedFile;
+			subImage = new CustomImage(selectedFile.getName(), Convert.FileToByteArray(selectedFile));
 			txtSubImage.setText(selectedFile.getAbsolutePath());
 		}
 	}
@@ -295,10 +300,10 @@ public class GUI {
 			try {
 				System.out.println("Key: " + key);
 				if(key.equals(name)) {
-					BufferedImage bf = Convert.fileToBufferedImage(order.getFileByName(key));
+					BufferedImage bf = Convert.bytearrayToBufferedImage(order.getFileByName(key).getImage());
 					for(Point p : order.getResultMap().get(key)) {
 						System.out.println("[" + (int)p.getX() + ";" + (int)p.getY() + "]");
-						EditImage.drawRectangule(bf, (int)p.getX(), (int)p.getY(), Convert.fileToBufferedImage(subImage).getWidth(), Convert.fileToBufferedImage(subImage).getHeight(), Color.RED);
+						EditImage.drawRectangule(bf, (int)p.getX(), (int)p.getY(), Convert.bytearrayToBufferedImage(subImage.getImage()).getWidth(), Convert.bytearrayToBufferedImage(subImage.getImage()).getHeight(), Color.RED);
 					}
 					return Convert.BufferedImageToArray(bf);
 				}
